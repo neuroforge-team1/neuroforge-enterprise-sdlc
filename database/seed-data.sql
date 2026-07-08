@@ -8,7 +8,7 @@
 USE neuroforge_nexus;
 
 INSERT INTO users (id, keycloak_id, full_name, email)
-VALUES ('REPLACE_WITH_KEYCLOAK_ADMIN_SUB', 'REPLACE_WITH_KEYCLOAK_ADMIN_SUB', 'Admin User', 'admin@neuroforge-nexus.dev')
+VALUES ('c9fe10ca-b3c1-4d6f-bc97-0b0762e86c09', 'c9fe10ca-b3c1-4d6f-bc97-0b0762e86c09', 'Admin User', 'admin@neuroforge-nexus.dev')
 ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
 
 INSERT INTO teams (id, name) VALUES
@@ -16,7 +16,7 @@ INSERT INTO teams (id, name) VALUES
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 INSERT INTO team_members (team_id, user_id)
-VALUES ('11111111-1111-1111-1111-111111111111', 'REPLACE_WITH_KEYCLOAK_ADMIN_SUB')
+VALUES ('11111111-1111-1111-1111-111111111111', 'c9fe10ca-b3c1-4d6f-bc97-0b0762e86c09')
 ON DUPLICATE KEY UPDATE team_id = VALUES(team_id);
 
 INSERT INTO projects (id, name, description, status, milestone_due_date, team_id, created_by)
@@ -27,6 +27,6 @@ VALUES (
     'ACTIVE',
     '2026-08-20',
     '11111111-1111-1111-1111-111111111111',
-    'REPLACE_WITH_KEYCLOAK_ADMIN_SUB'
+    'c9fe10ca-b3c1-4d6f-bc97-0b0762e86c09'
 )
 ON DUPLICATE KEY UPDATE name = VALUES(name);
