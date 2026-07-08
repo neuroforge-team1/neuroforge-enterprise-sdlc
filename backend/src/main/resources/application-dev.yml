@@ -1,0 +1,6 @@
+# Local development overrides. Values here are safe defaults for a
+# docker-compose-based local setup — never used in production.
+logging:
+  level:
+    com.neuroforge.nexus: DEBUG
+    org.springframework.security: DEBUG

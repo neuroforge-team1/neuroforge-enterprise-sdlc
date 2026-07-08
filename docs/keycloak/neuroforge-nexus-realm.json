@@ -1,0 +1,59 @@
+{
+  "realm": "neuroforge-nexus",
+  "enabled": true,
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "resetPasswordAllowed": true,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Full platform administration" },
+      { "name": "PROJECT_MANAGER", "description": "Create/manage projects and teams" },
+      { "name": "DEVELOPER", "description": "Standard contributor" },
+      { "name": "TESTER", "description": "QA / test execution" },
+      { "name": "DEVOPS_ENGINEER", "description": "Deployment & pipeline visibility (full scope from Milestone 3+)" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "nexus-backend",
+      "name": "NeuroForge Nexus Backend",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "secret": "change-me-in-local-env"
+    },
+    {
+      "clientId": "nexus-frontend",
+      "name": "NeuroForge Nexus Frontend",
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@neuroforge-nexus.dev",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "credentials": [
+        { "type": "password", "value": "admin123", "temporary": true }
+      ],
+      "realmRoles": ["ADMIN"]
+    }
+  ]
+}

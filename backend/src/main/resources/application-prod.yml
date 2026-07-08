@@ -1,0 +1,11 @@
+# Production overrides. All secrets/URLs must come from environment
+# variables / a secrets manager — nothing sensitive is hardcoded here.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.neuroforge.nexus: INFO
+    org.springframework.security: WARN
