@@ -179,9 +179,7 @@ export default function Landing() {
       <section ref={heroRef} className="max-w-6xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
         <div className="grid md:grid-cols-2 gap-14 items-center">
           <div className="animate-[fadeUp_0.6s_ease-out_both]">
-            <p className="font-data text-xs tracking-widest uppercase text-signal mb-4">
-              Project &amp; User Management · Milestone 1
-            </p>
+
             <h1 className="text-4xl sm:text-5xl font-semibold leading-[1.1] tracking-tight text-slate-50">
               Run the sprint without losing the thread.
             </h1>
@@ -285,7 +283,7 @@ export default function Landing() {
       </section>
 
       <footer className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-muted">
-        <span className="font-data">NeuroForge Nexus · Milestone 1</span>
+        <span className="font-data">NeuroForge Nexus</span>
         <span>Secured by Keycloak</span>
       </footer>
     </div>
