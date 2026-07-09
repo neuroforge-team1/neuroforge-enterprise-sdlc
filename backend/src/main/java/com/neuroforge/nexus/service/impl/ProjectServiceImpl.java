@@ -90,6 +90,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
+    public ProjectResponse updateStatus(String id, com.neuroforge.nexus.entity.ProjectStatus status) {
+        Project project = findProjectOrThrow(id);
+        project.setStatus(status);
+        return projectMapper.toResponse(projectRepository.save(project));
+    }
+
+    @Override
+    @Transactional
     public void deleteProject(String id) {
         if (!projectRepository.existsById(id)) {
             throw new ResourceNotFoundException("Project not found: " + id);

@@ -1,6 +1,7 @@
 package com.neuroforge.nexus.controller;
 
 import com.neuroforge.nexus.dto.request.ProjectCreateRequest;
+import com.neuroforge.nexus.dto.request.ProjectStatusUpdateRequest;
 import com.neuroforge.nexus.dto.request.ProjectUpdateRequest;
 import com.neuroforge.nexus.dto.response.ProjectResponse;
 import com.neuroforge.nexus.service.ProjectService;
@@ -52,5 +53,15 @@ public class ProjectController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Lighter-weight than the full PUT above: lets a TESTER move a project
+    // through ACTIVE / ON_HOLD / COMPLETED after QA sign-off, without
+    // needing PROJECT_MANAGER's full edit rights over name/team/dates.
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('TESTER','PROJECT_MANAGER','ADMIN')")
+    public ResponseEntity<ProjectResponse> updateStatus(@PathVariable String id,
+                                                          @Valid @RequestBody ProjectStatusUpdateRequest request) {
+        return ResponseEntity.ok(projectService.updateStatus(id, request.status()));
     }
 }

@@ -16,9 +16,13 @@ export default function TeamManagement() {
   const [newTeamName, setNewTeamName] = useState('');
   const [addMemberTeamId, setAddMemberTeamId] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState('');
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState(null);
+  const [syncError, setSyncError] = useState(null);
 
   const hasRole = useAuthStore((s) => s.hasRole);
   const canManage = hasRole('PROJECT_MANAGER') || hasRole('ADMIN');
+  const isAdmin = hasRole('ADMIN');
 
   const load = () => {
     setLoading(true);
@@ -54,18 +58,51 @@ export default function TeamManagement() {
     load();
   };
 
+  const handleSyncUsers = async () => {
+    setSyncing(true);
+    setSyncMessage(null);
+    setSyncError(null);
+    try {
+      const result = await userService.syncFromKeycloak();
+      setSyncMessage(
+        `Synced ${result.total} Keycloak user${result.total === 1 ? '' : 's'} — ${result.created} added, ${result.updated} updated.`
+      );
+      load();
+    } catch {
+      setSyncError('Could not sync users from Keycloak. Check the admin sync client is configured.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   if (loading) return <Loader label="Loading teams…" />;
   if (error) return <p className="text-danger text-sm">{error}</p>;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-2xl font-semibold text-slate-100">Teams</h1>
           <p className="text-muted mt-1">Assign people to teams so projects have owners.</p>
         </div>
-        {canManage && <Button onClick={() => setCreateOpen(true)}>New team</Button>}
+        <div className="flex gap-2">
+          {isAdmin && (
+            <Button variant="ghost" onClick={handleSyncUsers} disabled={syncing}>
+              {syncing ? 'Syncing…' : 'Sync users from Keycloak'}
+            </Button>
+          )}
+          {canManage && <Button onClick={() => setCreateOpen(true)}>New team</Button>}
+        </div>
       </div>
+
+      {isAdmin && (
+        <p className="text-xs text-muted mb-4">
+          Only people who've logged in at least once show up below by default — sync pulls in everyone
+          registered in Keycloak.
+        </p>
+      )}
+      {syncMessage && <p className="text-success text-sm mb-4">{syncMessage}</p>}
+      {syncError && <p className="text-danger text-sm mb-4">{syncError}</p>}
 
       {teams.length === 0 && (
         <EmptyState
