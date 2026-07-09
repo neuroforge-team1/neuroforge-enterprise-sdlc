@@ -15,7 +15,7 @@ export default function Sidebar() {
     <aside className="w-56 shrink-0 bg-panel border-r border-panelBorder min-h-screen px-3 py-6">
       <div className="px-3 mb-8">
         <p className="font-data text-signal text-xs tracking-widest uppercase">Nexus</p>
-        <p className="text-slate-100 font-semibold text-sm mt-0.5">Milestone 1</p>
+
       </div>
       <nav className="space-y-1">
         {NAV_ITEMS.map((item) => (

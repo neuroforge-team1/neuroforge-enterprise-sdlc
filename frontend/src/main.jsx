@@ -19,21 +19,30 @@ function renderError(message) {
   container.innerHTML = `<div style="color: #E15B5B; padding: 2rem; font-family: sans-serif;">${message}</div>`;
 }
 
-// onLoad: 'login-required' means the SPA never renders an unauthenticated
-// state — Keycloak handles the redirect before React mounts at all. There is
-// intentionally no in-app Login page.
+// onLoad: 'check-sso' (instead of 'login-required') lets the SPA render
+// immediately for visitors who aren't signed in yet — that's what makes a
+// public landing page possible. Anyone with an existing Keycloak session is
+// picked up silently via the iframe below, no visible redirect. Routes that
+// actually need a session are still gated — see routes/RequireAuth.jsx.
 keycloak
-  .init({ onLoad: 'login-required', pkceMethod: 'S256' })
+  .init({
+    onLoad: 'check-sso',
+    pkceMethod: 'S256',
+    silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+  })
   .then((authenticated) => {
-    if (!authenticated) {
-      renderError('Authentication failed. Please refresh and try again.');
-      return;
+    if (authenticated) {
+      useAuthStore.getState().setAuth(keycloak.tokenParsed);
     }
-    useAuthStore.getState().setAuth(keycloak.tokenParsed);
+    useAuthStore.getState().setInitialized(true);
 
-    // Keep the store's role/user info fresh across silent token refreshes.
+    // Keep the store's role/user info fresh across silent token refreshes,
+    // and clear it if the session ends (e.g. token expiry with no refresh).
     keycloak.onAuthRefreshSuccess = () => {
       useAuthStore.getState().setAuth(keycloak.tokenParsed);
+    };
+    keycloak.onAuthLogout = () => {
+      useAuthStore.getState().clearAuth();
     };
 
     renderApp();

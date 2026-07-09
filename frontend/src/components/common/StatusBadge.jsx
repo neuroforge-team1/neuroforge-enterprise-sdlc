@@ -2,12 +2,14 @@ const STYLES = {
   ACTIVE: 'bg-success/15 text-success border-success/30',
   ON_HOLD: 'bg-warning/15 text-warning border-warning/30',
   COMPLETED: 'bg-muted/15 text-muted border-muted/30',
+  PLANNED: 'bg-signal/15 text-signal border-signal/30',
 };
 
 const LABELS = {
   ACTIVE: 'Active',
   ON_HOLD: 'On hold',
   COMPLETED: 'Completed',
+  PLANNED: 'Planned',
 };
 
 export default function StatusBadge({ status }) {

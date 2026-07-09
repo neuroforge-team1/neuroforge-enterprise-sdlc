@@ -4,6 +4,8 @@ import com.neuroforge.nexus.dto.response.UserResponse;
 import com.neuroforge.nexus.entity.User;
 import com.neuroforge.nexus.mapper.UserMapper;
 import com.neuroforge.nexus.repository.UserRepository;
+import com.neuroforge.nexus.service.KeycloakAdminService;
+import com.neuroforge.nexus.service.KeycloakUserDto;
 import com.neuroforge.nexus.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final KeycloakAdminService keycloakAdminService;
 
     @Override
     @Transactional
@@ -42,5 +45,41 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public UserSyncResult syncAllFromKeycloak() {
+        List<KeycloakUserDto> keycloakUsers = keycloakAdminService.fetchAllUsers();
+
+        int created = 0;
+        int updated = 0;
+
+        for (KeycloakUserDto kcUser : keycloakUsers) {
+            if (kcUser.email() == null || kcUser.email().isBlank()) {
+                // Skip service accounts / users with no email — nothing to
+                // join them against in the app's local tables.
+                continue;
+            }
+
+            var existing = userRepository.findByKeycloakId(kcUser.id());
+            if (existing.isPresent()) {
+                User user = existing.get();
+                user.setFullName(kcUser.displayName());
+                user.setEmail(kcUser.email());
+                userRepository.save(user);
+                updated++;
+            } else {
+                userRepository.save(User.builder()
+                        .id(kcUser.id())
+                        .keycloakId(kcUser.id())
+                        .fullName(kcUser.displayName())
+                        .email(kcUser.email())
+                        .build());
+                created++;
+            }
+        }
+
+        return new UserSyncResult(created, updated, keycloakUsers.size());
     }
 }
